@@ -1,0 +1,148 @@
+.cart-section{
+    width: 100%;
+    padding: 20px 10vw;
+    display: flex;
+    justify-content: space-between;
+}
+
+.product-list{
+    width: 70%;
+}
+
+.section-heading{
+    font-size: 30px;
+    font-weight: 500;
+    margin: 20px 0;
+    text-transform: capitalize;
+}
+.cart, .wishlist{
+    width: 100%;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #d8d8d8;
+    margin-bottom: 60px;
+}
+
+.sm-product{
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.cart .sm-product:last-child, .wishlist .sm-product:last-child{
+    margin-bottom: 0;
+}
+
+.sm-product-img{
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+
+}
+
+.sm-text{
+    width: 50%;
+}
+
+.sm-product-name{
+    font-size: 25px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.sm-des{
+    font-size: 18px;
+    opacity: 0.5;
+    line-height: 25px;
+    text-transform: capitalize;
+    margin-top: 10px;
+}
+
+.item-counter{
+    width: 90px;
+    height: 30px;
+    display: flex;
+    margin-right: 20px;
+}
+.counter-btn, .item-count{
+    width: 30px;
+    height: 30px;
+}
+.counter-btn{
+    border: none;
+    background: #f3f3f3;
+    border: 1px solid rgb(216, 216, 216);
+    border-radius: 1px;
+    cursor: pointer;
+}
+.item-count{
+    text-align: center;
+    line-height: 30px;
+    background: #f5f5f5;
+}
+
+.sm-price{
+    font-size: 50px;
+    font-weight: 500;
+    color: #383838;
+}
+.sm-delete-btn{
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid rgb(216, 216, 216);
+    z-index: 2;
+    cursor: pointer;
+}
+.sm-delete-btn i{
+    height: 15px;
+}
+
+.checkout-section{
+    width: 28%;
+}
+
+.empty-img{
+    width: 50%;
+    display: block;
+    margin: auto;
+}
+
+.checkout-box{
+    width: 100%;
+    height: 200px;
+    border-radius: 2px;
+    border: 1px solid #d8d8d8;
+    padding: 20px;
+}
+.text{
+    text-transform: capitalize;
+    font-size: 18px;
+}
+
+.checkout-btn, .place-order-btn{
+    width: 100%;
+}
+
+.bill{
+    font-size: 60px;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.hidden{
+    display: none;
+}

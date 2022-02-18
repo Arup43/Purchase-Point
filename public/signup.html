@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Point - create account</title>
+    <link rel="stylesheet" href="css/signup.css">
+</head>
+<body>
+    <img src="img/loader.gif" class="loader" alt="">
+
+    <div class="alert-box">
+        <img src="img/error.png" alt="" class="alert-img">
+        <p class="alert-msg">Error message</p>
+    </div>
+
+
+    <div class="container">
+        <img src="img/purchase-point-white-logo.png" class="logo" alt="">
+        <div class="input-fields">
+            <input type="text" autocomplete="off" id="name" placeholder="name">
+            <input type="email" autocomplete="off" id="email" placeholder="email">
+            <input type="password" autocomplete="off" id="password" placeholder="password" >
+            <input type="text" autocomplete="off" id="number" placeholder="number">
+
+            <input type="checkbox" checked class="checkbox" id="terms-and-cond">
+            <label for="terms-and-cond">Agree to our terms and conditions.</label>
+
+            <button class="submit-btn">Create Account</button>
+        </div>
+        <a href="/login" class="link">already have an account? Log in here</a>
+    </div>
+    <script src="js/token.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>

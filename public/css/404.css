@@ -1,0 +1,13 @@
+.not-found-image{
+    display: block;
+    margin: 60px auto;
+}
+
+.not-found-msg{
+    text-align: center;
+    text-transform: capitalize;
+    color: #383838;
+}
+.not-found-msg a{
+    color: #383838;
+}

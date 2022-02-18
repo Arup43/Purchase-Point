@@ -1,0 +1,106 @@
+body {
+  display: block;
+  padding: 0 10vw;
+}
+.logo {
+  margin: 20px auto 50px;
+}
+
+input,
+textarea {
+  font-weight: 500;
+}
+
+input:not(input[type="checkbox"]) {
+  width: 100%;
+}
+
+textarea {
+  width: 100%;
+  height: 270px;
+  resize: none;
+  padding: 10px 20px;
+}
+
+.product-info {
+  width: 100%;
+  height: 500px;
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+  grid-template-rows: repeat(2, 1fr);
+  grid-gap: 20px;
+  margin-bottom: 20px;
+}
+
+.product-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  grid-row: span 2;
+  text-shadow: 0 0 10px #fff;
+  background: #ece9e9;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.text {
+  text-transform: capitalize;
+  color: #383838;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.upload-image-sec {
+  background: #ece9e9;
+  border-radius: 10px;
+  padding: 20px;
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.text i {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.upload-catalouge {
+  width: 100%;
+  margin: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  grid-gap: 10px;
+}
+
+.upload-image {
+  width: 100%;
+  height: 100px;
+  background: #fff;
+  cursor: pointer;
+  background-size: cover;
+}
+
+.upload-image:hover {
+  background: rgba(0, 0, 0, 0.2);
+  background-size: cover;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.product-price {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+}
+.product-price input {
+  margin: 0;
+}
+
+#tags {
+  text-transform: none;
+}
