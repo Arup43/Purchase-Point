@@ -32,5 +32,5 @@ After that the project will start on your default browser.
 11. Admins can manage new orders, customers, sellers, products and can add new admin and delivery system.
 12. Admins have to assign the order to the suitable delivery system.
 13. Delivery system has to deliver the assigned order.
-14. After delivery customers can give ratings and write a review about the product. All the given reviews and ratings will be shown on the product details page.
+14. After delivery, customers can give ratings and write a review about the product. All the given reviews and ratings will be shown on the product details page.
 
