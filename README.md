@@ -1,4 +1,5 @@
 # Purchase-Point
+
 ## This is a level 2, term 2 database project of CSE216 course
 
 In the frontend we've used html, css and bootstrap and in the backend we've used node js. We've used oracle database. 
@@ -8,7 +9,7 @@ To run the project you have to install node js in your machine. Then open the pr
 ```
 npm run
 ```
-It will intall all the required npm packages.
+It will install all the required npm packages.
 Then to start the server run the following terminal command:
 ```
 npm start
