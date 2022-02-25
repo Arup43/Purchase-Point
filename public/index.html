@@ -30,22 +30,36 @@
 
 
     <br><br><br>
-    <h1 style="margin-left: 190px;" class="py-5">weudycvfweu</h1>
+    <h1 style="margin-left: 190px;" class="py-5">Our Products</h1>
     <!-- cards container -->
-    <section id="weudycvfweu"></section>
+    <section id="all"></section>
+
+    <br><br><br>
+
+
+    <br><br><br>
+    <h1 style="margin-left: 190px;" class="py-5">Laptop</h1>
+    <!-- cards container -->
+    <section id="laptop"></section>
 
     <br><br><br><br><br>
 
 
-    <h1 style="margin-left: 190px;" class="py-5">tehnnbihowbbiw</h1>
+    <h1 style="margin-left: 190px;" class="py-5">Accessories</h1>
     <!-- cards container -->
-    <section id="tehnnbihowbbiw"></section>
+    <section id="accessories"></section>
 
     <br><br><br><br><br>
 
-    <h1 style="margin-left: 190px;" class="py-5">uiwgwcicuv</h1>
+    <h1 style="margin-left: 190px;" class="py-5">Phones</h1>
     <!-- cards container -->
-    <section id="uiwgwcicuv"></section>
+    <section id="phone"></section>
+
+    <br><br><br><br><br>
+
+    <h1 style="margin-left: 190px;" class="py-5">Men's fashion</h1>
+    <!-- cards container -->
+    <section id="men"></section>
 
     <br><br><br><br><br>
 
@@ -76,9 +90,11 @@
 	<script src="js/notification.js"></script>
 	<script src="js/orderHistory.js"></script>
     <script>
-        getProducts('weudycvfweu').then(data => createProductSlider(data, '#weudycvfweu'))
-        getProducts('tehnnbihowbbiw').then(data => createProductSlider(data, '#tehnnbihowbbiw'))
-        getProducts('uiwgwcicuv').then(data => createProductSlider(data, '#uiwgwcicuv'))
+        getProducts('accessories').then(data => createProductSlider(data, '#accessories'))
+        getProducts('phone').then(data => createProductSlider(data, '#phone'))
+        getProducts('laptop').then(data => createProductSlider(data, '#laptop'))
+        getProducts('men').then(data => createProductSlider(data, '#men'))
+        getProducts('men, women, phone, accessories, kid, book, daily need, medicine').then(data => createProductSlider(data, '#all'))
     </script>
 </body>
 

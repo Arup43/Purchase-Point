@@ -19,6 +19,26 @@ const createSmallCards = (data) => {
     `
 }
 
+const showAlert = (msg, type) => {
+    let alertBox = document.querySelector('.alert-box')
+    let alertMsg = document.querySelector('.alert-msg')
+    let alertImg = document.querySelector('.alert-img')
+    alertMsg.innerHTML = msg;
+
+    if (type == 'success') {
+        alertImg.src = `img/success.png`;
+        alertMsg.style.color = `0ab50a`
+    } else {
+        alertImg.src = `img/error.png`
+        alertMsg.style.color = null;
+    }
+
+    alertBox.classList.add('show')
+    setTimeout(() => {
+        alertBox.classList.remove('show')
+    }, 3000)
+}
+
 let totalBill = 0;
 
 const setProducts = (name) => {
@@ -132,31 +152,48 @@ const setupEvents = (name) => {
         })
 
         counterPlus[i].addEventListener('click', () => {
-            if (Number(item.innerHTML) < 9) {
-                item.innerHTML++;
 
-                price[i].innerHTML = `$${item.innerHTML * cost}`
-                if (name == 'cart') {
-                    totalBill += cost;
-                    updateBill()
-                }
-                fetch('/updateCartOrWishlist', {
-                    method: 'put',
-                    headers: new Headers({ 'Content-Type': 'application/json' }),
-                    body: JSON.stringify({
-                        type: name,
-                        email: user.email,
-                        productId: productIdElements[i].innerHTML,
-                        item: Number(item.innerHTML)
-                    })
-                }).then(res => res.json())
-                    .then(data => {
-                        console.log(data);
-                    })
-            }
+            //checking stock
+            fetch('/checkProductStock', {
+                method: 'post',
+                headers: new Headers({ 'Content-Type': 'application/json' }),
+                body: JSON.stringify({
+                    productId: productIdElements[i].innerHTML,
+                    item: Number(item.innerHTML) + 1
+                })
+            }).then(res => res.json())
+                .then(data => {
+                    if (data.warning) {
+                        showAlert(data.warning)
+                    } else {
+                        if (Number(item.innerHTML) < 20) {
+                            item.innerHTML++;
+
+                            price[i].innerHTML = `$${item.innerHTML * cost}`
+                            if (name == 'cart') {
+                                totalBill += cost;
+                                updateBill()
+                            }
+                            fetch('/updateCartOrWishlist', {
+                                method: 'put',
+                                headers: new Headers({ 'Content-Type': 'application/json' }),
+                                body: JSON.stringify({
+                                    type: name,
+                                    email: user.email,
+                                    productId: productIdElements[i].innerHTML,
+                                    item: Number(item.innerHTML)
+                                })
+                            }).then(res => res.json())
+                                .then(data => {
+                                    console.log(data);
+                                })
+                        }
+                    }
+                })
+
+
         })
     })
-
     deleteBtn.forEach((item, i) => {
         item.addEventListener('click', () => {
             productId = productIdElements[i].innerHTML;
@@ -177,5 +214,8 @@ const setupEvents = (name) => {
     })
 }
 
-setProducts('cart')
-setProducts('wishlist')
+if (sessionStorage.user) {
+    setProducts('cart')
+    setProducts('wishlist')
+}
+

@@ -24,39 +24,3 @@ const compareToken = (token, key) => {
     }
     return false
 }
-
-
-//common functions
-
-// const showAlert = (msg) => {
-//     let alertBox = document.querySelector('.alert-box')
-//     let alertMsg = document.querySelector('.alert-msg')
-//     alertMsg.innerHTML = msg;
-//     alertBox.classList.add('show')
-//     setTimeout(() => {
-//         alertBox.classList.remove('show')
-//     }, 3000)
-// }
-
-// //send data function
-// const sendData = (path, data) => {
-//     fetch(path, {
-//         method: 'post',
-//         headers: new Headers({'Content-type': 'application/json'}),
-//         body: JSON.stringify(data)
-//     }).then(res => res.json())
-//     .then(response => {
-//         processData(response)
-//     })
-// }
-
-// const processData = (data) => {
-//     loader.style.display = null;
-//     if(data.alert){
-//         showAlert(data.alert)
-//     } else{
-//         data.authToken = generateToken(data.email)
-//         sessionStorage.user = JSON.stringify(data)
-//         location.replace('/')
-//     }
-// }

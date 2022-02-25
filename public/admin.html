@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top admin-nav">
+        <h2 class="">Admin Dashboard</h2>
+        <li class="nav-item">
+            <a class="nav-link">
+                <div id="user-img">Admin <i class="fas fa-user"></i></div>
+                <div class="login-logout-popup hide">
+                    <p class="account-info">Log in as, name</p>
+                    <button class="btn btn-outline-success" id="user-btn">Log out</button>
+                </div>
+            </a>
+        </li>
+    </nav>
+
+    <section class="container my-5">
+        <div class="d-flex flex-wrap admin-options justify-content-between">
+            <a href="/manage-orders" class="m-5">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h3 class="card-title">New Orders</h3>
+                        <h6 class="card-subtitle mb-2 text-muted"><span id="new-orders-num"></span></h6>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/manage-customers" class="m-5">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h3 class="card-title">Manage Customers</h3>
+                        <h6 class="card-subtitle mb-2 text-muted"><span id="customers-num"></span></h6>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/manage-products" class="m-5">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h3 class="card-title">Manage Products</h3>
+                        <h6 class="card-subtitle mb-2 text-muted"><span id="products-num"></span></h6>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/manage-sellers" class="m-5">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h3 class="card-title">Manage Sellers</h3>
+                        <h6 class="card-subtitle mb-2 text-muted"><span id="sellers-num"></span></h6>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/manage-delivery" class="m-5">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h3 class="card-title">Manage Delivery System</h3>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/add-new-admin" class="m-5">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h3 class="card-title">Add New Admin</h3>
+                        <h6 class="card-subtitle mb-2 text-muted"></h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+
+
+
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/token.js"></script>
+</body>
+
+</html>

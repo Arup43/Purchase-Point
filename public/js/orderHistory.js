@@ -20,7 +20,7 @@ const getHistory = () => {
 `
     const history = document.querySelector('#history')
     if (!sessionStorage.user) {
-        notification.innerHTML = `Login to see your order history!`
+        history.innerHTML = `Login to see your order history!`
     } else {
         fetch('/history', {
             method: 'post',

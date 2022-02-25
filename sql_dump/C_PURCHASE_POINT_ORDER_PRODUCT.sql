@@ -1,0 +1,12 @@
+create table ORDER_PRODUCT
+(
+    ORDER_ID   VARCHAR2(2000) not null
+        references ORDERS,
+    PRODUCT_ID VARCHAR2(1000)
+        references PRODUCTS,
+    ITEM       NUMBER
+)
+/
+
+INSERT INTO C##PURCHASE_POINT.ORDER_PRODUCT (ORDER_ID, PRODUCT_ID, ITEM) VALUES ('2022-02-23T10:27:26.958Z', 'amazon basics gaming headset for pc and consoles-4336', 3);
+INSERT INTO C##PURCHASE_POINT.ORDER_PRODUCT (ORDER_ID, PRODUCT_ID, ITEM) VALUES ('2022-02-23T10:27:26.958Z', 'audio-technica ath-g1wl-3075', 2);

@@ -1,0 +1,12 @@
+.customers{
+    display: flex;
+    flex-direction: column;
+}
+.customer{
+    display: flex;
+    flex-direction: row;
+    border: 1px solid black;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 10px;
+}

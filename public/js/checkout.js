@@ -6,7 +6,13 @@ window.onload = () => {
 
 
 const placeOrderBtn = document.querySelector('.place-order-btn')
+let payment = document.querySelector('#payment').value;
 
+document.querySelector('#payment').addEventListener('change', () => {
+    
+    payment = document.querySelector('#payment').value;
+    console.log(payment);
+})
 placeOrderBtn.addEventListener('click', () => {
     if (totalBill == 0) {
         showAlert('Your cart is empty. Please add some products to cart to place order!')
@@ -19,16 +25,20 @@ placeOrderBtn.addEventListener('click', () => {
                 body: JSON.stringify({
                     email: JSON.parse(sessionStorage.user).email,
                     add: address,
-                    total_cost: totalBill
+                    total_cost: totalBill,
+                    payment: payment
                 })
             }).then(res => res.json())
                 .then(data => {
-                    if (data.alert == 'your order is placed') {
-                        delete localStorage.cart;
+                    if(data.payment == 'bkash'){
+                        location.replace('/bkash-gateway');
+                    } else if (data.alert == 'your order is placed' && data.payment == 'cash-on-delivery') {
                         showAlert(data.alert, 'success')
                         setTimeout(() => {
                             location.replace('/');
                         }, 3000)
+                    }else if(data.warning){
+                        showAlert(data.warning)
                     } else {
                         showAlert('Some error occurred! Try again!')
                     }
@@ -53,22 +63,3 @@ const getAddress = () => {
     }
 }
 
-const showAlert = (msg, type) => {
-    let alertBox = document.querySelector('.alert-box')
-    let alertMsg = document.querySelector('.alert-msg')
-    let alertImg = document.querySelector('.alert-img')
-    alertMsg.innerHTML = msg;
-
-    if (type == 'success') {
-        alertImg.src = `img/success.png`;
-        alertMsg.style.color = `0ab50a`
-    } else {
-        alertImg.src = `img/error.png`
-        alertMsg.style.color = null;
-    }
-
-    alertBox.classList.add('show')
-    setTimeout(() => {
-        alertBox.classList.remove('show')
-    }, 3000)
-}

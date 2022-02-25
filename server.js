@@ -205,7 +205,7 @@ app.post('/add-product', async (req, res) => {
 
 //get products
 app.post('/get-products', async (req, res) => {
-    let { email, productId, tags } = req.body;
+    let { email, productId, tags, manageProducts } = req.body;
     let result;
     if (productId) {
         let sqlToGetProductById = `SELECT * FROM PRODUCTS WHERE PRODUCT_ID = :1`;
@@ -228,6 +228,8 @@ app.post('/get-products', async (req, res) => {
         console.log(sqlToGetProductByTags)
         result = await queryDB(sqlToGetProductByTags, [...tagArr], false);
         //console.log(result);
+    } else if (manageProducts) {
+        result = await queryDB(`select * from PRODUCTS`, [], false);
     }
     let products = [];
     //console.log(result.rows);
@@ -261,10 +263,25 @@ app.post('/get-products', async (req, res) => {
 
 app.post('/delete-product', async (req, res) => {
     let { productId } = req.body;
-    let sqlToDeleteImagesFirst = `DELETE FROM IMAGES WHERE PRODUCT_ID = :1`
-    await queryDB(sqlToDeleteImagesFirst, [productId], true);
-    let sqlToDeleteProduct = `DELETE FROM PRODUCTS WHERE PRODUCT_ID = :1`
-    await queryDB(sqlToDeleteProduct, [productId], true);
+
+    let sql = `DELETE FROM IMAGES WHERE PRODUCT_ID = :1`
+    await queryDB(sql, [productId], true);
+
+    sql = `delete from cart where product_id=:1`
+    await queryDB(sql, [productId], true);
+
+    sql = `delete from wishlist where product_id=:1`
+    await queryDB(sql, [productId], true);
+
+
+    sql = `delete from order_product where product_id=:1`
+    await queryDB(sql, [productId], true);
+
+    sql = `delete from review where product_id=:1`
+    await queryDB(sql, [productId], true);
+
+    sql = `DELETE FROM PRODUCTS WHERE PRODUCT_ID = :1`
+    await queryDB(sql, [productId], true);
     res.json('success')
 })
 
@@ -286,34 +303,42 @@ app.post('/addtocartorwishlist', async (req, res) => {
     let actualDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     let dateFormat = 'yyyy/mm/dd hh24:mi:ss'
     if (type === 'cart') {
-        let sqlToCheckCart = `SELECT * FROM CART WHERE PRODUCT_ID=:1 AND EMAIL=:2`
-        let result = await queryDB(sqlToCheckCart, [productId, email], false);
-        if (result.rows.length === 0) {
-            let sqlToInsertToCart = `INSERT INTO CART VALUES(:1, :2, :3)`
-            await queryDB(sqlToInsertToCart, [email, productId, 1], true);
 
-            //notification
-            let sqlToGetProductName = `SELECT product_name FROM products WHERE product_id=:1`
-            let resultForProductName = await queryDB(sqlToGetProductName, [productId], false);
-            let notification_text = `${resultForProductName.rows[0][0]} has been added to your cart!`
-            let sqlToInsertIntoNotification = `INSERT INTO NOTIFICATION VALUES (:1, :2, TO_DATE(:3, :4))`
-            await queryDB(sqlToInsertIntoNotification, [notification_text, email, actualDate, dateFormat], true);
+        //stock checking
+        let sqlToCheckStock = `SELECT STOCK FROM PRODUCTS WHERE PRODUCT_ID=:1`
+        let resultForStock = await queryDB(sqlToCheckStock, [productId], false)
+        if (resultForStock.rows[0][0] == 0) {
+            return res.json({ 'warning': 'Sorry! This product is out of stock!' })
+        } else {
+            let sqlToCheckCart = `SELECT * FROM CART WHERE PRODUCT_ID=:1 AND EMAIL=:2`
+            let result = await queryDB(sqlToCheckCart, [productId, email], false);
+            if (result.rows.length === 0) {
+                let sqlToInsertToCart = `INSERT INTO CART VALUES(:1, :2, :3)`
+                await queryDB(sqlToInsertToCart, [email, productId, 1], true);
 
-            return res.json('Added!')
-        } else if (result.rows[0][2] === 0) {
-            let sqlToModifyCart = `UPDATE CART SET ITEM=1 WHERE PRODUCT_ID=:1 AND EMAIL=:2`
-            await queryDB(sqlToModifyCart, [productId, email], true);
-            //notification
-            let sqlToGetProductName = `SELECT product_name FROM products WHERE product_id=:1`
-            let resultForProductName = await queryDB(sqlToGetProductName, [productId], false);
-            let notification_text = `${resultForProductName.rows[0][0]} has been added to your cart!`
-            let sqlToInsertIntoNotification = `INSERT INTO NOTIFICATION VALUES (:1, :2, TO_DATE(:3, :4))`
-            await queryDB(sqlToInsertIntoNotification, [notification_text, email, actualDate, dateFormat], true);
+                //notification
+                let sqlToGetProductName = `SELECT product_name FROM products WHERE product_id=:1`
+                let resultForProductName = await queryDB(sqlToGetProductName, [productId], false);
+                let notification_text = `${resultForProductName.rows[0][0]} has been added to your cart!`
+                let sqlToInsertIntoNotification = `INSERT INTO NOTIFICATION VALUES (:1, :2, TO_DATE(:3, :4))`
+                await queryDB(sqlToInsertIntoNotification, [notification_text, email, actualDate, dateFormat], true);
 
-            return res.json('Added!')
-        }
-        else {
-            return res.json('Already added!')
+                return res.json('Added!')
+            } else if (result.rows[0][2] === 0) {
+                let sqlToModifyCart = `UPDATE CART SET ITEM=1 WHERE PRODUCT_ID=:1 AND EMAIL=:2`
+                await queryDB(sqlToModifyCart, [productId, email], true);
+                //notification
+                let sqlToGetProductName = `SELECT product_name FROM products WHERE product_id=:1`
+                let resultForProductName = await queryDB(sqlToGetProductName, [productId], false);
+                let notification_text = `${resultForProductName.rows[0][0]} has been added to your cart!`
+                let sqlToInsertIntoNotification = `INSERT INTO NOTIFICATION VALUES (:1, :2, TO_DATE(:3, :4))`
+                await queryDB(sqlToInsertIntoNotification, [notification_text, email, actualDate, dateFormat], true);
+
+                return res.json('Added!')
+            }
+            else {
+                return res.json('Already added!')
+            }
         }
     } else if (type === 'wishlist') {
         let sqlToCheckWishlist = `SELECT * FROM WISHLIST WHERE PRODUCT_ID=:1 AND EMAIL=:2`
@@ -414,23 +439,23 @@ app.post('/getCartOrWishlistProducts', async (req, res) => {
     }
 })
 
-app.put('/updateCartOrWishlist', async(req, res) => {
-    let {type, email, productId, item} = req.body;
+app.put('/updateCartOrWishlist', async (req, res) => {
+    let { type, email, productId, item } = req.body;
     console.log(req.body);
-    if(type === 'cart'){
-        let sql =  `UPDATE CART SET ITEM=:1 WHERE EMAIL=:2 AND PRODUCT_ID=:3`
+    if (type === 'cart') {
+        let sql = `UPDATE CART SET ITEM=:1 WHERE EMAIL=:2 AND PRODUCT_ID=:3`
         await queryDB(sql, [item, email, productId], true);
         return res.json(`updated ${productId}`)
-    } else{
-        let sql =  `UPDATE WISHLIST SET ITEM=:1 WHERE EMAIL=:2 AND PRODUCT_ID=:3`
+    } else {
+        let sql = `UPDATE WISHLIST SET ITEM=:1 WHERE EMAIL=:2 AND PRODUCT_ID=:3`
         await queryDB(sql, [item, email, productId], true);
         return res.json(`updated ${productId}`)
     }
 })
 
-app.delete('/deleteFromCartOrWishlist', async(req, res) => {
-    let {type, email, productId} = req.body;
-    if(type==='cart'){
+app.delete('/deleteFromCartOrWishlist', async (req, res) => {
+    let { type, email, productId } = req.body;
+    if (type === 'cart') {
         let sql = `DELETE FROM CART WHERE EMAIL=:1 AND PRODUCT_ID=:2`
         await queryDB(sql, [email, productId], true);
 
@@ -442,7 +467,7 @@ app.delete('/deleteFromCartOrWishlist', async(req, res) => {
         await queryDB(sqlToInsertIntoNotification, [notification_text, email], true)
 
         return res.json('deleted');
-    } else{
+    } else {
         let sql = `DELETE FROM WISHLIST WHERE EMAIL=:1 AND PRODUCT_ID=:2`
         await queryDB(sql, [email, productId], true);
 
@@ -461,55 +486,83 @@ app.get('/checkout', (req, res) => {
     res.sendFile(path.join(staticPath, 'checkout.html'))
 })
 
-app.post('/order', async(req, res) => {
-    const {email, add, total_cost} = req.body;
+app.post('/order', async (req, res) => {
+
+    const { email, add, total_cost, payment } = req.body;
+
+    //check stock of the products
+    let sqlToCheckProductStock = `SELECT P.PRODUCT_NAME, P.STOCK, C.ITEM, P.PRODUCT_ID
+    FROM CART C JOIN PRODUCTS P on P.PRODUCT_ID = C.PRODUCT_ID
+    WHERE C.EMAIL=:1`
+    let resultForProductStock = await queryDB(sqlToCheckProductStock, [email], false)
+    for (let i = 0; i < resultForProductStock.rows.length; i++) {
+        let productName = resultForProductStock.rows[i][0];
+        let stock = resultForProductStock.rows[i][1];
+        let item = resultForProductStock.rows[i][2];
+        if (stock == 0) {
+            return res.json({ 'warning': `Sorry! This product ${productName} is out of stock!` })
+        } else if (stock < item) {
+            return res.json({ 'warning': `Sorry! Only ${stock} item/s left of this product ${productName}!` })
+        }
+    }
+
+
+
     let date = new Date()
     //console.log(email, add, total_cost);
-    let sqlToInsertIntoOrders = `INSERT INTO ORDERS VALUES (:1, :2, to_date(:3, :4), :5, :6, :7, :8, :9, :10, :11, :12)`
+    let sqlToInsertIntoOrders = `INSERT INTO ORDERS VALUES (:1, :2, to_date(:3, :4), :5, :6, :7, :8, :9, :10, :11, :12, :13)`
     let orderId = date.toISOString();
     let actualDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     let dateFormat = 'yyyy/mm/dd hh24:mi:ss'
-    await queryDB(sqlToInsertIntoOrders, [orderId, email, actualDate, dateFormat, total_cost, add.address, add.street, add.city, add.state, add.pincode, add.landmark, 'not delivered'], true)
-    
+    await queryDB(sqlToInsertIntoOrders, [orderId, email, actualDate, dateFormat, total_cost, add.address, add.street, add.city, add.state, add.pincode, add.landmark, 'not assigned', payment], true)
+
     let sqlToGetCartInfo = `SELECT * FROM CART WHERE EMAIL=:1`
     let result = await queryDB(sqlToGetCartInfo, [email], false)
 
     let sqlToInsertIntoOrderProduct = `INSERT INTO ORDER_PRODUCT VALUES (:1, :2, :3)`
-    for(let i=0; i<result.rows.length; i++){
+    for (let i = 0; i < result.rows.length; i++) {
         await queryDB(sqlToInsertIntoOrderProduct, [orderId, result.rows[i][1], result.rows[i][2]], true);
     }
 
     let sqlToDeleteFromCart = `DELETE FROM CART WHERE EMAIL=:1`
     await queryDB(sqlToDeleteFromCart, [email], true);
 
-    
+
     //notification
     let notification_text = `Your order has been successfully placed! Order id: ${orderId}`
     let sqlToInsertIntoNotification = `INSERT INTO NOTIFICATION VALUES (:1, :2, TO_DATE(:3, :4))`
     await queryDB(sqlToInsertIntoNotification, [notification_text, email, actualDate, dateFormat], true)
 
+    //stock management
+    for (let i = 0; i < resultForProductStock.rows.length; i++) {
+        let stock = resultForProductStock.rows[i][1];
+        let item = resultForProductStock.rows[i][2];
+        let product_id = resultForProductStock.rows[i][3];
+        let sqlToReduceStock = `UPDATE PRODUCTS SET STOCK=:1 WHERE PRODUCT_ID=:2`
+        await queryDB(sqlToReduceStock, [stock - item, product_id], true);
+    }
 
-    return res.json({'alert': 'your order is placed'})
+    return res.json({ 'alert': 'your order is placed', 'payment': `${payment}` })
 })
 
-app.post('/notification', async(req, res) => {
-    let {email} = req.body;
+app.post('/notification', async (req, res) => {
+    let { email } = req.body;
     let sqlToGetNotification = `SELECT NOTIFICATION_TEXT FROM NOTIFICATION WHERE EMAIL=:1 ORDER BY "DATE" DESC`
     let result = await queryDB(sqlToGetNotification, [email], false);
     let notifications = []
-    for(let i =0; i< result.rows.length; i++){
+    for (let i = 0; i < result.rows.length; i++) {
         notifications.push(result.rows[i][0])
     }
     return res.json(notifications);
 })
 
-app.post('/history', async(req, res) => {
-    let {email} = req.body;
+app.post('/history', async (req, res) => {
+    let { email } = req.body;
     let sqlToGetOrder = `SELECT ORDER_ID, TOTAL_COST, ADDRESS, DELIVERY_STATUS FROM ORDERS WHERE EMAIL=:1 ORDER BY "DATE" DESC`
     let result = await queryDB(sqlToGetOrder, [email], false)
 
     let orderHistory = [];
-    for(let i = 0; i<result.rows.length; i++){
+    for (let i = 0; i < result.rows.length; i++) {
         let orderId = result.rows[i][0]
         let totalCost = result.rows[i][1]
         let address = result.rows[i][2]
@@ -521,7 +574,7 @@ app.post('/history', async(req, res) => {
         FROM ORDER_PRODUCT O JOIN PRODUCTS P on P.PRODUCT_ID = O.PRODUCT_ID
         WHERE O.ORDER_ID=:1`
         let resultForProducts = await queryDB(sqlToGetOrderProduct, [orderId], false)
-        for(let j=0; j<resultForProducts.rows.length; j++){
+        for (let j = 0; j < resultForProducts.rows.length; j++) {
             order += `<b>Product Name:</b> ${resultForProducts.rows[j][1]} <b>Quantity:</b> ${resultForProducts.rows[j][2]}<br>`
         }
         order += `<b>Address:</b> ${address}<br><b>Delivery status:</b> ${deliveryStatus}`
@@ -530,6 +583,352 @@ app.post('/history', async(req, res) => {
 
     return res.json(orderHistory);
 })
+
+app.post('/getReviews', async (req, res) => {
+    let { productId } = req.body;
+    let reviews = [];
+    let sqlToGetReview = `SELECT U.NAME, R.REVIEW_TEXT, R.RATING_STAR
+    FROM REVIEW R JOIN USERS U on R.EMAIL = U.EMAIL
+    WHERE R.PRODUCT_ID=:1 ORDER BY "DATE" DESC`
+    let resultForReview = await queryDB(sqlToGetReview, [productId], false);
+    for (let i = 0; i < resultForReview.rows.length; i++) {
+        let review = {
+            userName: resultForReview.rows[i][0],
+            reviewText: resultForReview.rows[i][1],
+            star: resultForReview.rows[i][2]
+        }
+        reviews.push(review)
+    }
+    return res.json(reviews);
+})
+
+app.post('/checkIfTheUserCanGiveReview', async (req, res) => {
+    let { productId, email, star, reviewText } = req.body;
+    let sqlToCheck = `SELECT OP.ORDER_ID
+    from ORDER_PRODUCT OP JOIN ORDERS O on O.ORDER_ID = OP.ORDER_ID
+    WHERE OP.PRODUCT_ID=:1 AND O.EMAIL=:2 AND O.DELIVERY_STATUS=:3`
+    let resultToCheck = await queryDB(sqlToCheck, [productId, email, 'delivered'], false);
+    if (resultToCheck.rows.length < 1) {
+        return res.json({ 'alert': 'You have to buy the product to give a review' })
+    } else {
+        let date = new Date();
+        let actualDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        let dateFormat = 'yyyy/mm/dd hh24:mi:ss'
+        let sqlToInsertIntoReview = `INSERT INTO REVIEW VALUES (:1, :2, :3, :4, TO_DATE(:5, :6))`
+        await queryDB(sqlToInsertIntoReview, [email, productId, reviewText, star, actualDate, dateFormat], true);
+        return res.json('success');
+    }
+})
+
+app.post('/checkProductStock', async (req, res) => {
+    let { productId, item } = req.body;
+    let sqlToCheckStock = `SELECT STOCK FROM PRODUCTS WHERE PRODUCT_ID=:1`
+    let result = await queryDB(sqlToCheckStock, [productId], false);
+    if (result.rows[0][0] == 0) {
+        return res.json({ 'warning': `Sorry! This product is out of stock!` })
+    } else if (result.rows[0][0] < item) {
+        return res.json({ 'warning': `Sorry! Only ${result.rows[0][0]} items left of this product!` })
+    } else {
+        return res.json('success');
+    }
+})
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(staticPath, 'admin.html'))
+})
+
+app.get('/admin-login', (req, res) => {
+    res.sendFile(path.join(staticPath, 'adminLogin.html'))
+})
+
+app.post('/admin-login', async (req, res) => {
+    let { email, password } = req.body
+    if (!email.length || !password.length) {
+        return res.json({ 'alert': 'Fill all the inputs' })
+    }
+
+    let sql = `SELECT COUNT(*) FROM ADMIN WHERE EMAIL=:1`
+    let result = await queryDB(sql, [email], false)
+    if (result.rows[0][0] == 0) {
+        return res.json({ 'alert': `email doesn't exist` });
+    } else {
+        sql = `SELECT * FROM ADMIN WHERE EMAIL=:1`
+        result = await queryDB(sql, [email], false)
+        console.log(result.rows[0][2]);
+        if (result.rows[0][2] === password) {
+            return res.json({
+                name: result.rows[0][0],
+                email: result.rows[0][1]
+            })
+        } else {
+            return res.json({ 'alert': 'password is incorrect' })
+        }
+    }
+})
+
+app.get('/manage-customers', (req, res) => {
+    res.sendFile(path.join(staticPath, 'manageCustomers.html'))
+})
+
+app.get('/manage-orders', (req, res) => {
+    res.sendFile(path.join(staticPath, 'manageOrders.html'))
+})
+
+app.get('/manage-products', (req, res) => {
+    res.sendFile(path.join(staticPath, 'manageProducts.html'))
+})
+
+app.get('/manage-sellers', (req, res) => {
+    res.sendFile(path.join(staticPath, 'manageSellers.html'))
+})
+
+app.get('/manage-delivery', (req, res) => {
+    res.sendFile(path.join(staticPath, 'manageDelivery.html'))
+})
+
+app.get('/add-new-admin', (req, res) => {
+    res.sendFile(path.join(staticPath, 'addNewAdmin.html'))
+})
+
+app.post('/get-all-products', async (req, res) => {
+    let result = await queryDB(`select * from PRODUCTS;`, [], false);
+
+})
+
+app.post('/new-order', async (req, res) => {
+    let result = await queryDB(`SELECT count(*) from orders where delivery_status='not assigned'`, [], false)
+    return res.json(result.rows[0][0]);
+})
+
+app.post('/customer-num', async (req, res) => {
+    let result = await queryDB(`SELECT count(*) from users`, [], false)
+    return res.json(result.rows[0][0]);
+})
+
+app.post('/product-num', async (req, res) => {
+    let result = await queryDB(`SELECT count(*) from products`, [], false)
+    return res.json(result.rows[0][0]);
+})
+
+app.post('/seller-num', async (req, res) => {
+    let result = await queryDB(`SELECT count(*) from sellers`, [], false)
+    return res.json(result.rows[0][0]);
+})
+
+app.post('/getCustomers', async (req, res) => {
+    let result = await queryDB(`SELECT * FROM USERS`, [], false)
+    let customers = []
+    for (let i = 0; i < result.rows.length; i++) {
+        let customer = {
+            name: result.rows[i][0],
+            email: result.rows[i][1],
+            phone: result.rows[i][3],
+            seller: result.rows[i][4]
+        }
+        let sqlForOrder = `SELECT * FROM ORDERS WHERE EMAIL=:1`
+        let resultForOrder = await queryDB(sqlForOrder, [customer.email], false)
+        customer.totalOrder = resultForOrder.rows.length
+        customer.totalSpent = 0;
+        for (let j = 0; j < resultForOrder.rows.length; j++) {
+            customer.totalSpent += resultForOrder.rows[j][3]
+        }
+        customers.push(customer)
+    }
+    return res.json(customers)
+})
+app.post('/getSellers', async (req, res) => {
+    let result = await queryDB(`SELECT * FROM SELLERS`, [], false)
+    let sellers = []
+    for (let i = 0; i < result.rows.length; i++) {
+        let seller = {
+            name: result.rows[i][0],
+            address: result.rows[i][2],
+            phone: result.rows[i][3],
+            email: result.rows[i][4]
+        }
+        let sqlForProducts = `SELECT * FROM products WHERE EMAIL=:1`
+        let resultForProducts = await queryDB(sqlForProducts, [seller.email], false)
+        seller.totalProducts = resultForProducts.rows.length
+        seller.totalPrice = 0;
+        for (let j = 0; j < resultForProducts.rows.length; j++) {
+            seller.totalPrice += resultForProducts.rows[j][5];
+        }
+        sellers.push(seller)
+    }
+    return res.json(sellers)
+})
+
+app.post('/addAdmin', async (req, res) => {
+    let { name, address, email, phone, password } = req.body;
+    await queryDB(`INSERT INTO ADMIN VALUES (:1, :2, :3, :4, :5)`, [name, email, password, address, phone], true);
+    return res.json('success')
+})
+
+app.get('/bkash-gateway', (req, res) => {
+    res.sendFile(path.join(staticPath, 'bkash.html'))
+})
+
+app.post('/getDeliverySystem', async (req, res) => {
+    let result = await queryDB(`SELECT * FROM DELIVERY_SYSTEM`, [], false);
+    let delivery_system = []
+    for (let i = 0; i < result.rows.length; i++) {
+        let delivery = {
+            name: result.rows[i][0],
+            email: result.rows[i][1],
+            phone: result.rows[i][3],
+            area: result.rows[i][4]
+        }
+        delivery_system.push(delivery);
+    }
+    return res.json(delivery_system);
+})
+
+app.post('/deleteDelivery', async (req, res) => {
+    let { email } = req.body;
+    let sqlToGetDeliveryOrder = `SELECT * FROM DELIVERY_ORDER WHERE DELIVERY_EMAIL=:1`
+    let result = await queryDB(sqlToGetDeliveryOrder, [email], false)
+    for (let i = 0; i < result.rows.length; i++) {
+        let orderId = result.rows[i][1];
+        let resultForOrder = await queryDB(`update orders set delivery_status='not assigned' where order_id=:1 and delivery_status='assigned'`, [orderId], true)
+    }
+    await queryDB(`delete from delivery_order where delivery_email=:1`, [email], true);
+    await queryDB(`delete from delivery_system where delivery_email=:1`, [email], true);
+    return res.json('success');
+})
+
+app.post('/get-orders', async (req, res) => {
+    let result = await queryDB(`SELECT * FROM ORDERS where delivery_status='not assigned'`, [], false);
+    let orders = []
+    for (let i = 0; i < result.rows.length; i++) {
+        let order = {
+            orderId: result.rows[i][0],
+            email: result.rows[i][1],
+            date: result.rows[i][2],
+            totalCost: result.rows[i][3],
+            address: result.rows[i][4],
+            street: result.rows[i][5],
+            city: result.rows[i][6],
+            state: result.rows[i][7],
+            pincode: result.rows[i][8],
+            landmark: result.rows[i][9],
+            deliveryStatus: result.rows[i][10],
+            payment: result.rows[i][11]
+        }
+        orders.push(order);
+    }
+    return res.json(orders);
+})
+
+app.post('/cancelOrder', async (req, res) => {
+    let { orderId, email } = req.body;
+    let date = new Date();
+    let actualDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    let dateFormat = 'yyyy/mm/dd hh24:mi:ss'
+    await queryDB(`delete from delivery_order where order_id=:1`, [orderId], true);
+    await queryDB(`insert into notification values(:1, :2, to_date(:3, :4))`, [`Your order ${orderId} has been cancelled`, email, actualDate, dateFormat], true);
+    
+    let result = await queryDB(`SELECT * FROM ORDER_PRODUCT WHERE ORDER_ID=:1`, [orderId], false)
+    for(let i=0; i<result.rows.length; i++){
+        let item = result.rows[i][2]
+        let product_id = result.rows[i][1]
+        let resultForStock = await queryDB(`select stock from products where product_id=:1`, [product_id], false)
+        let stock = resultForStock.rows[0][0];
+        await queryDB(`update products set stock=:1 where product_id=:2`, [stock+item, product_id], true);
+    }
+
+    await queryDB(`delete from order_product where order_id=:1`, [orderId], true);
+    await queryDB(`delete from orders where order_id=:1`, [orderId], true);
+
+    return res.json('success');
+})
+
+app.post('/assignOrderToDelivery', async(req, res) => {
+    let {orderId, delivery} = req.body;
+    let resultForEmail = await queryDB(`select delivery_email from delivery_system where delivery_name=:1`, [delivery], false)
+    let email = resultForEmail.rows[0][0]
+    await queryDB(`insert into delivery_order values(:1, :2)`, [email, orderId], true);
+    await queryDB(`update orders set delivery_status='assigned' where order_id=:1`, [orderId], true);
+    return res.json('success');
+})
+
+app.get('/add-delivery', (req, res) => {
+    res.sendFile(path.join(staticPath, 'addDelivery.html'))
+})
+
+app.post('/add-delivery', async(req, res) => {
+    let {name, email, phone, password, area} = req.body;
+    await queryDB(`insert into delivery_system values(:1, :2, :3, :4, :5)`, [name, email, password, phone, area], true);
+    return res.json('success');
+})
+
+app.get('/delivery', (req, res) => {
+    res.sendFile(path.join(staticPath, 'delivery.html'))
+})
+app.get('/delivery-login', (req, res) => {
+    res.sendFile(path.join(staticPath, 'deliveryLogin.html'))
+})
+
+
+app.post('/delivery-login', async(req, res) => {
+    let {email, password} = req.body;
+    if (!email.length || !password.length) {
+        return res.json({ 'alert': 'Fill all the inputs' })
+    }
+
+    let sql = `SELECT COUNT(*) FROM delivery_system WHERE DELIVERY_EMAIL=:1`
+    let result = await queryDB(sql, [email], false)
+    if (result.rows[0][0] == 0) {
+        return res.json({ 'alert': `email doesn't exist` });
+    } else {
+        sql = `SELECT * FROM delivery_system WHERE DELIVERY_EMAIL=:1`
+        result = await queryDB(sql, [email], false)
+        if (result.rows[0][2] === password) {
+            return res.json({
+                name: result.rows[0][0],
+                email: result.rows[0][1]
+            })
+        } else {
+            return res.json({ 'alert': 'password is incorrect' })
+        }
+    }
+})
+
+app.post('/getOrderByDeliveryEmail', async(req, res) => {
+    let {email} = req.body;
+    let result = await queryDB(`select * from DELIVERY_ORDER join ORDERS O on O.ORDER_ID = DELIVERY_ORDER.ORDER_ID where DELIVERY_ORDER.DELIVERY_EMAIL=:1 and O.DELIVERY_STATUS='assigned'`, [email], false)
+    let orders = []
+    for(let i=0; i<result.rows.length; i++){
+        let order = {
+            deliveryEmail: result.rows[i][0],
+            orderId: result.rows[i][1],
+            userEmail: result.rows[i][3],
+            totalCost: result.rows[i][5],
+            address: result.rows[i][6],
+            street: result.rows[i][7],
+            city: result.rows[i][8],
+            state: result.rows[i][9],
+            pincode: result.rows[i][10],
+            landmark: result.rows[i][11],
+            deliveryStatus: result.rows[i][12],
+            payment: result.rows[i][13]
+        }
+        orders.push(order)
+    }
+    return res.json(orders);
+})
+
+app.post('/updateDeliveryStatus', async(req, res) => {
+    let {orderId, customerEmail} = req.body;
+
+    let date = new Date();
+    let actualDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    let dateFormat = 'yyyy/mm/dd hh24:mi:ss'
+    //console.log(orderId, customerEmail)
+    await queryDB(`update orders set delivery_status='delivered' where order_id=:1`, [orderId], true);
+    await queryDB(`insert into notification values (:1, :2, to_date(:3, :4))`, [`Your order ${orderId} has been delivered! Please give review on the puchased products. Thank you!`, customerEmail, actualDate, dateFormat], true);
+    return res.json('success')
+})
+
 
 //404 route
 app.get('/404', (req, res) => {

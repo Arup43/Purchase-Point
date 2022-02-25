@@ -50,17 +50,32 @@ const createNav = () => {
 </nav>
 <nav class="category">
     <div class="d-flex justify-content-center">
-        <div class="btn btn-outline-success category-item">
-            <p>Home</p>
+        <div class="btn btn-outline-success category-item laptop">
+            <p>Laptop</p>
         </div>
-        <div class="btn btn-outline-success category-item">
-            <p>Men</p>
+        <div class="btn btn-outline-success category-item smartphones">
+            <p>Smartphones</p>
         </div>
-        <div class="btn btn-outline-success category-item">
-            <p>Women</p>
-        </div>
-        <div class="btn btn-outline-success category-item">
+        <div class="btn btn-outline-success category-item accessories">
             <p>Accessories</p>
+        </div>
+        <div class="btn btn-outline-success category-item men">
+            <p>Men's fashion</p>
+        </div>
+        <div class="btn btn-outline-success category-item women">
+            <p>Women's fashion</p>
+        </div>
+        <div class="btn btn-outline-success category-item kid">
+            <p>kid's fashion</p>
+        </div>
+        <div class="btn btn-outline-success category-item books">
+            <p>Books</p>
+        </div>
+        <div class="btn btn-outline-success category-item daily-need">
+            <p>Daily needs</p>
+        </div>
+        <div class="btn btn-outline-success category-item medicine">
+            <p>Medicine</p>
         </div>
     </div>
 </nav>
@@ -106,4 +121,39 @@ searchBtn.addEventListener('click', () => {
     if (searchBox.value.length) {
         location.href = `/search/${searchBox.value}`
     }
+})
+document.querySelector('.laptop').addEventListener('click', () => {
+    location.href = `/search/laptop`
+})
+
+document.querySelector('.smartphones').addEventListener('click', () => {
+    location.href = `/search/phone`
+})
+
+document.querySelector('.accessories').addEventListener('click', () => {
+    location.href = `/search/accessories`
+})
+
+document.querySelector('.men').addEventListener('click', () => {
+    location.href = `/search/men`
+})
+
+document.querySelector('.women').addEventListener('click', () => {
+    location.href = `/search/women`
+})
+
+document.querySelector('.kid').addEventListener('click', () => {
+    location.href = `/search/kid`
+})
+
+document.querySelector('.books').addEventListener('click', () => {
+    location.href = `/search/books`
+})
+
+document.querySelector('.daily-need').addEventListener('click', () => {
+    location.href = `/search/daily-need`
+})
+
+document.querySelector('.medicine').addEventListener('click', () => {
+    location.href = `/search/medicine`
 })

@@ -21,6 +21,11 @@
     <div class="nav-container">
     </div>
 
+    <div class="alert-box">
+        <img src="../img/error.png" alt="" class="alert-img">
+        <p class="alert-msg">Error message</p>
+    </div>
+
     <section class="product-details">
         <div class="image-slider">
             <div class="product-images">
@@ -32,10 +37,10 @@
         </div>
         <div class="details">
             <h2 class="product-brand">
-                
+
             </h2>
             <p class="product-short-des">
-                
+
             </p>
             <span class="product-price"></span>
             <span class="product-actual-price"></span>
@@ -44,6 +49,10 @@
             <div class="btn-section my-5">
                 <button class="cart-btn btn btn-success">add to cart</button>
                 <button class="wishlist-btn btn btn-outline-warning">add to wishlist</button>
+            </div>
+
+            <div class="star-rating">
+                <h4 style="font-weight: 500;">Customer rating: <span class="product-rating">0.0</span></h4>
             </div>
         </div>
     </section>
@@ -58,15 +67,38 @@
 
     <section class="container-for-card-slider"></section>
     <br><br><br><br>
-   
+
 
     <div class="modal modal-dialog-scrollable" tabindex="-1" id="modal-notification">
-	</div>
+    </div>
 
 
     <div class="modal modal-dialog-scrollable" tabindex="-1" id="modal-history">
-		
-	</div>
+    </div>
+
+    <div class="review-section container">
+        <h2 style="font-weight: 600; color: green;">Reviews: </h2> <br><br>
+        <div class="give-review">
+
+            <h3 style="font-weight: 600; color: green;">Give a rating (out of 5 stars)</h3>
+            <span style="cursor: pointer;" class="star1 fa fa-star"></span>
+            <span style="cursor: pointer;" class="star2 fa fa-star"></span>
+            <span style="cursor: pointer;" class="star3 fa fa-star"></span>
+            <span style="cursor: pointer;" class="star4 fa fa-star"></span>
+            <span style="cursor: pointer;" class="star5 fa fa-star"></span>
+
+            <br><br><br>
+
+            <label style="font-weight: 600; color: green;" class="label-for-review" for="review">Write a review</label><br>
+            <textarea id="review" placeholder="Say something about the product"></textarea>
+
+            <button class="btn btn-success submit-review-btn">Submit Review</button>
+        </div> <br><br><br>
+        <div class="others-review">
+            <h3 style="font-weight: 600; color: green;">Customer reviews:</h3><br><br>
+            
+        </div>
+    </div>
 
     <footer class="bg-dark py-5">
     </footer>
