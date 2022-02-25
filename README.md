@@ -4,7 +4,7 @@
 
 In the frontend we've used html, css and bootstrap and in the backend we've used node js. We've used oracle database. 
 
-## Installation guide
+## Installation guide:
 To run the project you have to install node js in your machine. Then open the project folder and run the following terminal command:
 ```
 npm install
