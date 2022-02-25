@@ -16,7 +16,7 @@ npm start
 ```
 It will start the server. Nodemon is used so that whenever any change is made, the server will restart automatically.
 
-Then open your browser and go to [http://localhost:8080/]. Here you can visit the website.
+Then open your browser and go to http://localhost:8080/. Here you can visit the website.
 
 ## Features:
 1. Our e-commerce website has three kind of users: a) customers and sellers. b) admin. c) delivery system
