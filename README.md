@@ -7,14 +7,14 @@ In the frontend we've used html, css and bootstrap and in the backend we've used
 ## Intallation guide
 To run the project you have to install node js in your machine. Then open the project folder and run the following terminal command:
 ```
-npm run
+npm install
 ```
 It will install all the required npm packages.
 Then to start the server run the following terminal command:
 ```
 npm start
 ```
-It will start the server. Nodemon is used so that whenever any change is made, the server will start automatically.
+It will start the server. Nodemon is used so that whenever any change is made, the server will restart automatically.
 
 After that the project will start on your default browser.
 
