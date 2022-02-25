@@ -30,7 +30,7 @@ After that the project will start on your default browser.
 9. Users can apply for a seller account. After successfully applying for the seller account, they can add their own product and can run a business on our website. 
 10. Sellers can add, edit and delete products. They can apply offers on different products. 
 11. Admins can manage new orders, customers, sellers, products and can add new admin and delivery system.
-12. Admin have to assign the order to the suitable delivery system.
+12. Admins have to assign the order to the suitable delivery system.
 13. Delivery system has to deliver the assigned order.
 14. After delivery customers can give ratings and write a review about the products. All the reviews will be shown on the product details page.
 
